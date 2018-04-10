@@ -1,0 +1,310 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+
+/* toolbar and screen */
+
+.Screen {
+  position: relative;
+  flex-direction: column;
+  /* border: solid thin blue; */
+  display: flex;
+  height: 500px;
+}
+
+.MessagesView .Messages {
+  flex: 1;
+}
+
+.Toolbar {
+  background: #077de1;
+  height: 30px;
+  margin-bottom: 20px;
+  justify-content: space-between;
+}
+
+.Toolbar button {
+  border: none;
+
+background-color: transparent;
+
+position: relative;
+
+color: white;
+
+margin: 3px 3px;
+
+outline: none;
+
+font-size: 16px;
+}
+
+.Toolbar button.active {
+  background: rgb(102, 174, 241);
+  color: white;
+}
+
+.Toolbar .spacer {
+  flex: 1;
+}
+
+.Toolbar button .badge {
+  position: absolute;
+    color: white;
+    background: rgb(255, 126, 0);
+    font-size: 10px;
+    width: 14px;
+    border-radius: 100%;
+    padding: 1px 0px;
+    padding-top: 0px;
+    top: -6px;
+    right: -4px;
+    font-weight: bold;
+    box-shadow: rgba(0, 0, 0, 0.37) 0px 1px 1px;
+}
+
+
+.Screen header {
+  position: absolute;
+  top: 0px;
+  height: 40px;
+  background: #eee;
+  width: 100%;
+}
+
+.Screen header h1 {
+  padding:0; margin:0;
+  text-align: center;
+  font-size: 18px;
+}
+.Screen header h1 p {
+  font-size: 12px;
+  font-weight: normal;
+  margin:0;
+}
+
+
+.Screen header button {
+  position: absolute;
+  top: 0px;
+}
+
+.row {
+  display:flex;
+}
+
+.row input {
+  flex: auto;
+  margin: 0px 2px;
+}
+
+
+
+/* messages */
+
+.MessageChrome.righty .MessageBubble {
+  background: #077de1;
+  color: white;
+}
+
+.MessageChrome {
+    margin: 10px 5px;
+}
+
+.MessageChrome .header {
+  color: #aaa;
+  margin-left: 10px;
+  margin-bottom: 3px;
+}
+
+.MessageChrome .header b {
+  color: black;
+}
+
+.MessageBubble .Attachment {
+  margin-top: 10px;
+}
+
+.MessageBubble .Attachment b {
+  font-size: 11px;
+  color: #00206c;
+  text-transform: uppercase;
+  background: #fff9;
+  padding: 2px 6px 0px;
+}
+
+.MessageBubble .Attachment div {
+  margin-top: 2px;
+}
+
+.MessageBubble .Attachment img {
+  max-width: 50px;
+}
+.MessageChrome.righty .header {
+    text-align: right;
+    margin-right: 10px;
+  }
+
+.MessageChrome.righty .avatar {
+  margin-left: 7px;
+}
+
+.MessageChrome.righty .row {
+  flex-direction: row-reverse;
+}
+
+.MessageChrome.lefty .avatar {
+  margin-right: 10px;
+}
+
+.MessageChrome .header {
+  font-size: 11px;
+  margin-left: 5px;
+}
+
+
+.MessageBubble {
+  border-radius: 15px;
+  background: #f0f0f0;
+  padding: 8px 10px;
+  font-size: 14px;
+  color: #333;
+  position: relative;
+}
+
+.MessageChrome .Buttons {
+  padding: 4px 10px;
+}
+
+.MessageChrome.righty .Buttons {
+  padding-right: 40px;
+  text-align: right;
+}
+
+.MessageChrome.lefty .Buttons {
+  padding-left: 40px;
+}
+
+.MessageChrome .Buttons button {
+  color: #077de1;
+}
+
+.MessageChrome .Buttons button.checked {
+  color: #bbb;
+}
+
+.avatar {
+  height: 37px;
+  border-radius: 50%;
+  align-self: flex-end;
+}
+
+/* editor */
+
+
+
+
+.page p img {
+  zoom: 50%;
+}
+
+
+.Editor {
+  flex:0;
+}
+
+.Editor .Adder {
+  padding: 10px 10px;
+  color: #555;
+  font-size: 13px;
+}
+
+.Adder b {
+  margin: 0px 7px;
+  padding: 6px 15px;
+  background: rgb(120, 120, 120);
+  border-radius: 4px;
+  color: #fffafa;
+  font-size: 13px;
+}
+
+.StandardTextEditor input {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 7px;
+  font-size: 14px;
+}
+
+.Suggestions {
+    padding: 10px 5px !important;
+    overflow-x: scroll;
+}
+
+.Suggestions.row {
+  /*max-width: 5000px;*/
+  max-height: 50px;
+  flex-wrap: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+
+.Suggestions > div {
+  flex: 0 0 auto;
+}
+
+.Suggestions .MessageBubble {
+    margin-right: 10px;
+}
+
+
+/* ... */
+
+body {
+  font-family: sans-serif;
+}
+
+.highlight > div {
+  border-left: solid 5px green;
+  padding: 10px;
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 0px 4px;
+}
+
+.table-view-cell {
+    padding: 10px;
+}
+
+.MessageView .Card {
+    box-shadow: black 0px 0px 2px;
+    border-radius: 5px;
+    margin: 5px 10px;
+}
+
+.Card .Section, .Card .MainSection {
+    padding: 5px 10px;
+}
+
+.CardHeader, .CardFooter {
+  padding: 0px 20px;
+  font-size: 12px;
+}
+
+.CardHeader{
+  color: #555;
+}
+
+.CardFooter{
+  text-align: center;
+  color: #888;
+}
+
+.Palette {
+    background: #eee;
+    margin: 5px 10px;
+    padding: 2px 5px;
+    margin-bottom: 20px;
+    box-shadow: black 0px 1px 1px;
+    border-radius: 5px;
+}
