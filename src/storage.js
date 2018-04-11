@@ -1,82 +1,90 @@
 import { store } from 'react-easy-state'
-
 const state = store({})
 
-function drill(components){
-  let ptr = state
-  components.forEach(component => {
-    if (!ptr[component]) ptr[component] = {}
-    ptr = ptr[component]
-  })
-  return ptr
+// note: add semantics are weird because
+// this is both a json and a tuple store
+//
+// if we start with {a:{b:1}}...
+//
+// add('b', 'v') => {a:{b:1},b:"v"} (case 1)
+// add('b/v')    => same
+// add('a', 'd') => {a:{b:1, d:true}} (case 2)
+// add('a/d')    => same
+// add('a/b', 'd') => {a:{b:{"1":true,d:true}}} (case 3)
+// add('a/b/d')    => same
+
+function matchLeaf(first, tree){
+  if (first === tree || tree[first] === true) return [{}]
+  if (first === '...') return [{[first]:tree}]
+  if (first[0] === '$'){
+    if (typeof tree !== "object") return [{[first]:tree}]
+    else return Object.keys(tree).filter(k => tree[k] === true).map(k => ({[first]: k}))      
+  }
+  return []
 }
-function upgradingSet(ptr, k, v){
-  let ov = ptr[k]
-  if (!ov || typeof v === 'object'){
-    // ptr = {a:1}, k = 'b', v = 'a'
-    ptr[k] = v
-  } else if (typeof ov === 'object'){
-    // ptr = {a:{b:1}}, k = 'a', v = 'd'
-    ptr[k][v] = true      
+function match1(tree, components, matched){
+  let [first, ...rest] = components
+  if (rest.length === 0){
+    return matchLeaf(first, tree).map( i => Object.assign(i, matched))
   } else {
-    // ptr = {a:1}, k = 'a', v = 2
-    ptr[k] = { [ov]: true, [v]: true }
+    if (first[0] === '$'){
+      return Object.keys(tree).reduce(
+        (results, k) => results.concat(
+          match1(
+            tree[k], 
+            components.slice(1),
+            Object.assign({[first]:k}, matched)
+          )
+        ),
+        []
+      )
+    } else if (tree[first]){
+      return match1( tree[first], components.slice(1), matched )
+    } else return []
   }
 }
+
+function substitute(path, m){
+  return Object.keys(m).reduce(
+    (mPath, k) => mPath.replace(k, m[k]),
+    path
+  )
+}
+
+
+// the stuff
+
 function add(path, v){
   path = path.replace('(+)', Date.now())
   let components = path.split('/')
   let k = components.pop()
   if (!v){ v = k; k = components.pop() }
-  upgradingSet(drill(components), k, v)
-  runSubs()
+  let ptr = components.reduce(
+    (o, component) => {
+      if (!o[component]) o[component] = {}
+      return o[component]
+    },
+    state
+  )
+  let ov = ptr[k]
+  if (!ov || typeof v === 'object'){   // case 1
+    ptr[k] = v
+  } else if (typeof ov === 'object'){  // case 2
+    ptr[k][v] = true      
+  } else {                             // case 3
+    ptr[k] = { [ov]: true, [v]: true }
+  }
 }
-function matches(path){
-  return _matches(state, path.split('/'), {})
-}
+
 function match(...paths){
   return paths.reduce(
-    (ms, path) => {
-      return ms.map(m => {
-        let mPath = path
-        Object.keys(m).forEach(k => {
-          mPath = mPath.replace(k, m[k])
-        })
-        return matches(mPath).map(r => Object.assign(r, m))
-      }).reduce((p,c) => p.concat(c))
-    }, [{}]
+    (ms, path) => ms.map(
+      m => match1( state, substitute(path, m).split('/'), {} ).map(
+        r => Object.assign(r, m)
+      )
+    ).reduce( (p,c) => p.concat(c) ),
+    [{}]
   )
-}
-function immediateMatches(pattern, tree){
-  if (pattern === tree) return [{}]
-  if (tree[pattern] === true) return [{}]
-  if (pattern === '...') return [{[pattern]:tree}]
-  if (pattern[0] === '$'){
-    if (typeof tree !== "object") return [{[pattern]:tree}]
-    else return Object.keys(tree).filter(k => tree[k] === true).map(k => ({[pattern]: k}))      
-  }
-  return []
-}
-function _matches(tree, components, matched){
-  let [first, ...rest] = components
-  if (rest.length === 0){
-    return immediateMatches(first, tree).map( i => Object.assign(i, matched))
-  } else {
-    if (first[0] === '$'){
-      let results = []
-      Object.keys(tree).forEach(k => {
-        let ms = _matches(
-          tree[k], 
-          components.slice(1),
-          Object.assign({[first]:k}, matched)
-        )
-        results = results.concat(ms)
-      })
-      return results
-    } else if (tree[first]){
-      return _matches( tree[first], components.slice(1), matched )
-    } else return []
-  }
 }
 
 export {add, match, state}
