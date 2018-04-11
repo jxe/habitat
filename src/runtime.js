@@ -9,13 +9,15 @@ export default class Runtime {
 
   post(parsed, attachments, uid){
     if (!uid) uid = this.uid
-    if (parsed.type == 'text'){
+    if (parsed.type === 'text'){
       parsed.attached = attachments
       add(`${uid}/posts/(+)`, parsed)
       add(`${uid}/data`, attachments)
       this.check()
-    } else if (parsed.type == 'when') {
+    } else if (parsed.type === 'when') {
       add(`${uid}/when/(+)`, parsed)
+    } else if (parsed.type === 'group') {
+      add(`${uid}/group/(+)`, parsed)
     }
   }
   

@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-  Menu, MenuItem, MenuDivider,
-  Navbar, NavbarDivider, NavbarGroup, NavbarHeading,
+  Menu, MenuItem,
+  Navbar, NavbarDivider, NavbarGroup,
   Popover, Button, ButtonGroup,
   Position, Alignment
 } from "@blueprintjs/core";
@@ -12,7 +12,7 @@ import {Messages} from './Messages.jsx'
 import {Editor} from './Editor.jsx'
 import './styles.css'
 import { view, store } from 'react-easy-state'
-import { state, match } from './storage.js'
+import { state } from './storage.js'
 import Runtime from './runtime.js'
 
 const fakeUsers = [{
@@ -37,7 +37,7 @@ const UsersMenu = view(() => {
   return <Popover content={
     <Menu> {
         fakeUsers.map(u => (
-          <MenuItem onClick={() => config.user = u} text={u.displayName} />
+          <MenuItem onClick={() => config.user = u} text={u.displayName} key={u.uid} />
         ))
     } </Menu>
   } position={Position.RIGHT_TOP}>
@@ -58,10 +58,10 @@ const UsersMenu = view(() => {
 
 const Toolbar = view(() => {
   let Toggle = view(({k, v, ...rest}) => (
-    <Button {...rest} active={config[k] == v} onClick={()=> config[k] = v}/>
+    <Button {...rest} active={config[k] === v} onClick={()=> config[k] = v}/>
   ))
 
-  return <Navbar>
+  return <Navbar className="Navbar">
     <NavbarGroup align={Alignment.LEFT}>
       <ButtonGroup>
         <Toggle icon="chat" text="Habitat" k="showing" v="chat"/>
@@ -81,18 +81,18 @@ const Habitat = view(() => {
   let runtime = new Runtime(config.user.uid)
   if (modals[0]) return modals[0]
   let messages = runtime.posts().map(msg => {
-    msg.expandedAuthors = fakeUsers.filter(u => u.uid == msg.author)
-    msg.expandedAuthors[0].isMe = msg.author == config.user.uid
+    msg.expandedAuthors = fakeUsers.filter(u => u.uid === msg.author)
+    msg.expandedAuthors[0].isMe = msg.author === config.user.uid
     return msg
   })
   return <div className="MessagesView Screen">
     <Toolbar />
-    {showing == 'chat' && <div style={{display:"flex", flexDirection: "column", height: "100%"}}>
+    {showing === 'chat' && <div style={{display:"flex", flexDirection: "column", height: "100%"}}>
       <Messages runtime={runtime} msgs={messages} />
       <Editor runtime={runtime} />
     </div>}
-    {showing == 'data' && <div>
-      <ObjectInspector data={state}/>
+    {showing === 'data' && <div style={{padding: "10px"}}>
+      <ObjectInspector data={state} expandLevel={2} />
     </div>}
   </div>
 })

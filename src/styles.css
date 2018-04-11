@@ -4,6 +4,9 @@ body {
   font-family: sans-serif;
 }
 
+.Navbar {
+  background: #f6f9fa;
+}
 
 /* toolbar and screen */
 
@@ -212,8 +215,14 @@ font-size: 16px;
 }
 
 
-.Editor {
-  flex:0;
+.Editor form {
+  background: #f6f9fa;
+  padding: 3px 4px;
+  box-shadow: 0px 0px 2.7px rgba(0,0,0,0.2);
+}
+
+.Editor form input {
+  padding-left: 20px;
 }
 
 .Editor .Adder {

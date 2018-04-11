@@ -3,14 +3,14 @@ import {
   Button
 } from "@blueprintjs/core";
 import { config as editorConfig } from './Editor.jsx'
-import { add, state, match } from './storage.js'
+import { match } from './storage.js'
 import { view } from 'react-easy-state'
 import {TableInspector} from 'react-inspector'
 
 const Authors = ({expandedAuthors}) => (
   <div>{
     expandedAuthors.map(a => (
-      <span key={a.userId}> <b>{a.displayName}</b> {a.role} </span>
+      <span key={a.uid}> <b>{a.displayName}</b> {a.role} </span>
     ))
   }</div>
 )
@@ -47,7 +47,7 @@ const Message = view(({msg, runtime}) => {
   let photoURL = expandedAuthors[0].photoURL
   return <div className={`MessageChrome ${direction}`}>
     <div className="row">
-      <img className="avatar" src={photoURL} />
+      <img className="avatar" src={photoURL} alt="" />
       <div>
         <div className="header">
           <Authors expandedAuthors={expandedAuthors} />

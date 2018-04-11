@@ -1,17 +1,7 @@
-import { view, store } from 'react-easy-state'
+import { store } from 'react-easy-state'
 
 const state = store({})
-const subs = []
 
-function sub(paths, fn){
-  let s = [paths, fn]
-  subs.push(s)
-  fn(match(paths))
-  return s
-}
-function runSubs(){
-  subs.forEach(([paths, fn])=> fn(match(paths)))
-}
 function drill(components){
   let ptr = state
   components.forEach(component => {
@@ -22,10 +12,10 @@ function drill(components){
 }
 function upgradingSet(ptr, k, v){
   let ov = ptr[k]
-  if (!ov || typeof v == 'object'){
+  if (!ov || typeof v === 'object'){
     // ptr = {a:1}, k = 'b', v = 'a'
     ptr[k] = v
-  } else if (typeof ov == 'object'){
+  } else if (typeof ov === 'object'){
     // ptr = {a:{b:1}}, k = 'a', v = 'd'
     ptr[k][v] = true      
   } else {
@@ -58,10 +48,10 @@ function match(...paths){
   )
 }
 function immediateMatches(pattern, tree){
-  if (pattern == tree) return [{}]
+  if (pattern === tree) return [{}]
   if (tree[pattern] === true) return [{}]
-  if (pattern == '...') return [{[pattern]:tree}]
-  if (pattern[0] == '$'){
+  if (pattern === '...') return [{[pattern]:tree}]
+  if (pattern[0] === '$'){
     if (typeof tree !== "object") return [{[pattern]:tree}]
     else return Object.keys(tree).filter(k => tree[k] === true).map(k => ({[pattern]: k}))      
   }
@@ -69,10 +59,10 @@ function immediateMatches(pattern, tree){
 }
 function _matches(tree, components, matched){
   let [first, ...rest] = components
-  if (rest.length == 0){
+  if (rest.length === 0){
     return immediateMatches(first, tree).map( i => Object.assign(i, matched))
   } else {
-    if (first[0] == '$'){
+    if (first[0] === '$'){
       let results = []
       Object.keys(tree).forEach(k => {
         let ms = _matches(
@@ -89,7 +79,7 @@ function _matches(tree, components, matched){
   }
 }
 
-export {sub, add, match, state}
+export {add, match, state}
 
 
 // add('foo/bar/baz')
@@ -109,7 +99,6 @@ export {sub, add, match, state}
 // console.log(
 //   matches('$x/likes/$y')
 // )
-
 
 // console.log(
 //   'mutuals',

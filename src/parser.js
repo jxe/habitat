@@ -1,6 +1,6 @@
-import Parsimmon, { string, regexp, seqObj, alt, lazy, seq, lookahead } from 'parsimmon'
+import Parsimmon, { string, regexp, seqObj, alt, lazy } from 'parsimmon'
 // const Parsimmon = require('parsimmon')
-// const { string, regexp, seqObj, alt, lazy, seq } = Parsimmon
+// const { string, regexp, seqObj, alt, lazy } = Parsimmon
 
 //////////
 // atoms
@@ -56,7 +56,7 @@ let text = lazy(() => alt(
 })
 
 function plural(x){
-  if (x == 'query') return 'queries'
+  if (x === 'query') return 'queries'
   else return `${x}s`
 }
 
@@ -66,13 +66,25 @@ let when = seqObj(
   ['query', query],
   ws,
   ['text', text]
-).thru(withSpan).map(([o,t]) => {o.type = 'when'; o.matchedText=t; return o} )
+).thru(annotate('when'))
+
+let group = seqObj(
+  string('/group'),
+  ws,
+  ['key', ident],
+  ws,
+  ['params', role.or(variable).sepBy1(ws)],
+  ws,
+  ['query', query]
+).thru(annotate('group'))
+
 
 function parse(t){
-  return when.or(text).parse(t)
+  return when.or(group).or(text).parse(t)
 }
 
 
+// console.log(group.tryParse("/group match $a $b {$a/likes/$b}"))
 // console.log(when.tryParse("/when {$x/foo} hello"))
   
 // console.log( parse("hello 📎foo 📎bar 📎baz") )
@@ -91,17 +103,6 @@ function parse(t){
 //   Number(x[0]) * {s: 1, m: 60, h: 60*60, d: 60*60*24}[x[1][0]]
 // ))
 
-let matchDirective = seqObj(
-  string('/match'),
-  ws,
-  ['key', ident],
-  ['params', role.or(variable).sepBy1(ws)],
-  
-).node('match')
-let directive = matchDirective
-
-let entry = text.or(directive).atLeast(1)
-
 
 function span(parser){
   return Parsimmon(function(input, i) {
@@ -119,6 +120,18 @@ function withSpan(parser){
     result.value = [result.value, input.slice(i, result.index)]
     return Parsimmon.makeSuccess(result.index, result.value)
   })
+}
+
+function annotate(type){
+  return function(parser){
+    return Parsimmon(function(input, i) {
+      var result = parser._(input, i);
+      if (!result.status) return result;
+      result.value.type = type
+      result.value.matchedText = input.slice(i, result.index)
+      return Parsimmon.makeSuccess(result.index, result.value)
+    })
+  }
 }
 
 export {parse}
